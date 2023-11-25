@@ -55,8 +55,7 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('end_financing')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('active')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('active'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

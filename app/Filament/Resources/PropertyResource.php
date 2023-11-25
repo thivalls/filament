@@ -11,7 +11,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\BulkAction;
 
 class PropertyResource extends Resource
 {
@@ -44,8 +46,7 @@ class PropertyResource extends Resource
                 Tables\Columns\TextColumn::make('price')
                     ->money()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('active')
-                    ->boolean(),
+                Tables\Columns\ToggleColumn::make('active'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -65,7 +66,13 @@ class PropertyResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    BulkAction::make('Deactivate')
+                    ->requiresConfirmation()
+                    ->action(fn (Collection $records) => $records->each->update(['active' => false])),
                 ]),
+                BulkAction::make('Deactivate')
+                    ->requiresConfirmation()
+                    ->action(fn (Collection $records) => $records->each->update(['active' => false])),
             ]);
     }
 
