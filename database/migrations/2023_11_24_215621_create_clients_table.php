@@ -14,6 +14,7 @@ return new class extends Migration
             $table->decimal('salary', 10, 2);
             $table->decimal('start_financing', 10, 2);
             $table->decimal('end_financing', 10, 2);
+            $table->boolean('active')->default(true);
             $table->timestamps();
         });
     }

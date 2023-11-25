@@ -35,6 +35,8 @@ class ClientResource extends Resource
                 Forms\Components\TextInput::make('end_financing')
                     ->required()
                     ->numeric(),
+                Forms\Components\Toggle::make('active')
+                    ->required(),
             ]);
     }
 
@@ -53,6 +55,8 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('end_financing')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\IconColumn::make('active')
+                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

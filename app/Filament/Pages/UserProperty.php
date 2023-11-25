@@ -16,7 +16,7 @@ class UserProperty extends Page
     public $properties;
 
     public function mount() {
-        $this->client = Client::find(1);
+        $this->client = Client::find(2);
         $this->properties = Property::whereBetween('price', [$this->client->start_financing, $this->client->end_financing])->get();
     }
 }
