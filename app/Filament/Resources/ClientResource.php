@@ -11,7 +11,12 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
 
 class ClientResource extends Resource
 {
@@ -35,8 +40,20 @@ class ClientResource extends Resource
                 Forms\Components\TextInput::make('end_financing')
                     ->required()
                     ->numeric(),
-                Forms\Components\Toggle::make('active')
+                Toggle::make('active')
                     ->required(),
+                Forms\Components\FileUpload::make('rg')
+                    ->downloadable()
+                    ->directory('rg'),
+                Forms\Components\FileUpload::make('cpf')
+                    ->downloadable()
+                    ->directory('cpf'),
+                Forms\Components\FileUpload::make('addressDocument')
+                    ->downloadable()
+                    ->directory('addressDocument'),
+                Forms\Components\FileUpload::make('salaryDocument')
+                    ->downloadable()
+                    ->directory('salaryDocument'),
             ]);
     }
 
@@ -71,11 +88,26 @@ class ClientResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+                BulkAction::make('Deactivate')
+                ->requiresConfirmation()
+                ->action(fn (Collection $records) => $records->each->update(['active' => false]))
+                ->after(fn() => Notification::make()
+                ->title('Itens desativados')
+                ->success()
+                ->send()),
+                BulkAction::make('Activate')
+                ->requiresConfirmation()
+                ->action(fn (Collection $records) => $records->each->update(['active' => true]))
+                ->after(fn() => Notification::make()
+                ->title('Itens ativados')
+                ->success()
+                ->send()),
             ]);
     }
 
@@ -83,6 +115,7 @@ class ClientResource extends Resource
     {
         return [
             'index' => Pages\ManageClients::route('/'),
+            'view' => Pages\ViewClient::route('/{record}'),
         ];
     }
 }

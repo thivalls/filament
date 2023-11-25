@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\BulkAction;
+use Filament\Notifications\Notification;
 
 class PropertyResource extends Resource
 {
@@ -66,13 +67,21 @@ class PropertyResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
-                    BulkAction::make('Deactivate')
-                    ->requiresConfirmation()
-                    ->action(fn (Collection $records) => $records->each->update(['active' => false])),
                 ]),
                 BulkAction::make('Deactivate')
                     ->requiresConfirmation()
-                    ->action(fn (Collection $records) => $records->each->update(['active' => false])),
+                    ->action(fn (Collection $records) => $records->each->update(['active' => false]))
+                    ->after(fn() => Notification::make()
+                    ->title('Itens desativados')
+                    ->success()
+                    ->send()),
+                BulkAction::make('Activate')
+                ->requiresConfirmation()
+                ->action(fn (Collection $records) => $records->each->update(['active' => true]))
+                ->after(fn() => Notification::make()
+                ->title('Itens ativados')
+                ->success()
+                ->send()),
             ]);
     }
 

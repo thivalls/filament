@@ -12,9 +12,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('salary', 10, 2);
-            $table->decimal('start_financing', 10, 2);
-            $table->decimal('end_financing', 10, 2);
+            $table->decimal('start_financing', 10, 2)->nullable();
+            $table->decimal('end_financing', 10, 2)->nullable();
             $table->boolean('active')->default(true);
+            $table->string('rg')->nullable();
+            $table->string('cpf')->nullable();
+            $table->string('addressDocument')->nullable();
+            $table->string('salaryDocument')->nullable();
             $table->timestamps();
         });
     }
